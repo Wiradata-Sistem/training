@@ -6,9 +6,55 @@ class GroupsController extends AppController
 {
     public function index()
     {
-        $groups = $this->Groups->find('all');
-        $this->set('groups', $groups);
-        $this->viewBuilder()->setOption('serialize', ['groups']);
+        $page = $this->request->getQuery('page', 1);
+        $limit = $this->request->getQuery('limit', 10);
+        $order = $this->request->getQuery('order', 'id');
+        $sort = $this->request->getQuery('sort', 'asc');
+        $keyword = $this->request->getQuery('keyword');
+
+        $page = intval($page);
+        $limit = intval($limit);
+
+        if (!in_array($order, ['id', 'name'])) {
+            $order = "id";
+        }
+        if ($page < 1) {
+            $page = 1;
+        }
+        if ($limit < 1) {
+            $limit = 1;
+        }
+        $sort = strtolower($sort);
+        if (!in_array($sort, ['asc', 'desc'])) {
+            $sort = 'asc';
+        }
+        
+        $groups = $this->Groups->find()->order([$order => $sort]);
+        if ($keyword) {
+            $groups = $groups->where(['name LIKE ' => "%$keyword%"]);
+        }
+
+        $count = $groups->count();
+        if ($limit > $count) {
+            $limit = $count;
+        }
+        if (($page * $limit) > $count) {
+            $page = intval(ceil($count/$limit));
+        }
+
+        $group = $groups->limit($limit)->page($page)->all();  
+        
+        $pagination = [
+            'page' => $page,
+            'limit' => $limit,
+            'order' => $order,
+            'sort' => $sort,
+            'count' => $count,
+            'keyword' => $keyword
+        ];        
+
+        $this->set(['pagination', 'groups'], [$pagination, $groups]);
+        $this->viewBuilder()->setOption('serialize', ['groups', 'pagination']);
     }
 
     public function view($id)
