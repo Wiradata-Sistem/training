@@ -47,4 +47,5 @@ $routes->setRouteClass(DashedRoute::class);
 $routes->scope('/', function (RouteBuilder $routes) {
     $routes->setExtensions(['json']);
     $routes->resources('Groups');
+    $routes->resources('Users');
 });
