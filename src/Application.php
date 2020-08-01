@@ -18,13 +18,14 @@ namespace App;
 
 use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
-use Cake\Error\Middleware\ErrorHandlerMiddleware;
+//use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
 use Cake\Http\Middleware\BodyParserMiddleware;
-use Cake\Http\Middleware\CsrfProtectionMiddleware;
+//use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
-use Cake\Routing\Middleware\AssetMiddleware;
+//use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
+use App\Middleware\ErrorApiMiddleware;
 
 /**
  * Application setup class.
@@ -70,12 +71,13 @@ class Application extends BaseApplication
         $middlewareQueue
             // Catch any exceptions in the lower layers,
             // and make an error page/response
-            ->add(new ErrorHandlerMiddleware(Configure::read('Error')))
+            //->add(new ErrorHandlerMiddleware(Configure::read('Error')))
+            ->add(new ErrorApiMiddleware())
 
             // Handle plugin/theme assets like CakePHP normally does.
-            ->add(new AssetMiddleware([
+            /*->add(new AssetMiddleware([
                 'cacheTime' => Configure::read('Asset.cacheTime'),
-            ]))
+            ]))*/
 
             // Add routing middleware.
             // If you have a large number of routes connected, turning on routes

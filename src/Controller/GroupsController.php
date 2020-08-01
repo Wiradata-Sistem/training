@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace App\Controller;
 
+use Cake\Datasource\Exception\RecordNotFoundException;
+
 class GroupsController extends AppController 
 {
     public function index()
@@ -42,7 +44,11 @@ class GroupsController extends AppController
             $page = intval(ceil($count/$limit));
         }
 
-        $group = $groups->limit($limit)->page($page)->all();  
+        $groups = $groups->limit($limit)->page($page)->all();
+        
+        if (empty($groups->toArray())) {
+            throw new RecordNotFoundException(__('Group not found'));
+        }
         
         $pagination = [
             'page' => $page,
