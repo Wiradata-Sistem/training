@@ -7,6 +7,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Cache\Cache;
 
 /**
  * Groups Model
@@ -52,6 +53,18 @@ class GroupsTable extends Table
             'targetForeignKey' => 'user_id',
             'joinTable' => 'groups_users',
         ]);
+    }
+
+    public function afterSave($event, $entity, $options = [])
+    {
+        if ($entity->isNew()) {
+            Cache::clearGroup('group', 'default');
+        }
+    }
+
+    public function afterDelete($event, $entity, $options = [])
+    {
+        Cache::clearGroup('group', 'default');
     }
 
     /**
