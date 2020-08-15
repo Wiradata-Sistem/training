@@ -28,6 +28,8 @@ use Cake\Controller\Controller;
  */
 class AppController extends Controller
 {
+    protected $redis;
+
     /**
      * Initialization hook method.
      *
@@ -42,7 +44,11 @@ class AppController extends Controller
         parent::initialize();
 
         $this->loadComponent('RequestHandler');
-        $this->loadComponent('Flash');
+        $this->RequestHandler->renderAs($this, 'json');
+        $this->redis = new \Redis();
+        $this->redis->connect('redis', 6379);
+        
+        //$this->loadComponent('Flash');
 
         /*
          * Enable the following component for recommended CakePHP form protection settings.

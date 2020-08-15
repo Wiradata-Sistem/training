@@ -100,6 +100,7 @@ return [
             'className' => FileEngine::class,
             'path' => CACHE,
             'url' => env('CACHE_DEFAULT_URL', null),
+            // 'groups' => ['group', 'user']
         ],
 
         /*
