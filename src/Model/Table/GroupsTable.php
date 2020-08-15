@@ -55,6 +55,7 @@ class GroupsTable extends Table
         ]);
     }
 
+    /* 
     public function afterSave($event, $entity, $options = [])
     {
         if ($entity->isNew()) {
@@ -65,7 +66,7 @@ class GroupsTable extends Table
     public function afterDelete($event, $entity, $options = [])
     {
         Cache::clearGroup('group', 'default');
-    }
+    } */
 
     /**
      * Default validation rules.

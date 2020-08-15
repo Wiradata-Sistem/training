@@ -22,9 +22,8 @@ class GroupsController extends AppController
             "keyword" => $keyword
         ]);
 
-        $response = Cache::read($cacheKey);
-
-        if ($response === null) {
+        $response = $this->redis->get($cacheKey);
+        if (!$response) {
 	        $page = intval($page);
             $limit = intval($limit);
 
@@ -79,8 +78,10 @@ class GroupsController extends AppController
                 ]
             ];
 
-	        Cache::write($cacheKey, $response);
-        }      
+	        $this->redis->set($cacheKey, serialize($response));
+        } else {
+            $response = unserialize($response);
+        } 
 
         $this->set(['status_code', 'status_message', 'data'], $response);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);
@@ -88,23 +89,19 @@ class GroupsController extends AppController
 
     public function view($id)
     {
-        /*$redis = new \Redis();
-        $redis->connect('redis', 6379);
-        $groupListCaches = $redis->keys("*");
-        foreach($groupListCaches as $groupListCache) {
-            $redis->del($groupListCaches[0]);
-        } 
-
-        //$deleteScript = 'return redis.call("DEL", unpack(redis.call("keys", ARGV[1])))';
-        //$redis = Cache::getConnection();
-        //$redis->eval($deleteScript, 0, "keyPattern:*");*/
-
-        $group = $this->Groups->get($id);
-        $response = [
-            "status_code" => "cdc-200",
-            "status_message" => "success",
-            "data" => $group
-        ];
+        $cacheKey = 'groups::'.$id;
+        $response = $this->redis->get($cacheKey);
+        if (!$response) {
+            $group = $this->Groups->get($id);
+            $response = [
+                "status_code" => "cdc-200",
+                "status_message" => "success",
+                "data" => $group
+            ];
+            $this->redis->set($cacheKey, serialize($response));
+        } else {
+            $response = unserialize($response);
+        }
         $this->set(['status_code', 'status_message', 'data'], $response);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);
     }
@@ -116,6 +113,11 @@ class GroupsController extends AppController
         if ($this->Groups->save($group)) {
             $message = 'Saved';
             $statusCode = 'cdc-200';
+
+            $groupCaches = $this->redis->keys('groups::list*');
+            foreach ($groupCaches as $c) {
+                $this->redis->del($c);
+            }
         } else {
             $message = 'Error';
             $statusCode = 'cdc-115';
@@ -126,6 +128,7 @@ class GroupsController extends AppController
             'status_message' => $message,
             'data' => $group,
         ]);
+        $this->response = $this->response->withStatus(201);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);
     }
 
@@ -137,6 +140,12 @@ class GroupsController extends AppController
         if ($this->Groups->save($group)) {
                 $message = 'Saved';
                 $statusCode = 'cdc-200';
+                $groupCaches = $this->redis->keys('groups::list*');
+                foreach ($groupCaches as $c) {
+                    $this->redis->del($c);
+                }
+
+                $this->redis->del('groups::'.$id);
 
         } else {
                 $message = 'Error';
@@ -154,17 +163,25 @@ class GroupsController extends AppController
     {
         $this->request->allowMethod(['delete']);
         $group = $this->Groups->get($id);
-        $message = 'Deleted';
-        $statusCode = 'cdc-200';
-        if (!$this->Groups->delete($group)) {
-                $message = 'Error';
-                $statusCode = 'cdc-115';
+        // $message = 'Deleted';
+        // $statusCode = 'cdc-200';
+        if ($this->Groups->delete($group)) {
+                // $message = 'Error';
+                // $statusCode = 'cdc-115';
+
+                $groupCaches = $this->redis->keys('groups::list*');
+                foreach ($groupCaches as $c) {
+                    $this->redis->del($c);
+                }
+
+                $this->redis->del('groups::'.$id);
         }
         $this->set([
-            'status_message' => $message,
+            'status_message' => null, // $message,
             'data' => null,
-            'status_code' => $statusCode
+            'status_code' => null // $statusCode
         ]);
+        $this->response = $this->response->withStatus(204);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);
     }
 

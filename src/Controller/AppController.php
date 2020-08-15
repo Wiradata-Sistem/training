@@ -28,6 +28,8 @@ use Cake\Controller\Controller;
  */
 class AppController extends Controller
 {
+    protected $redis;
+
     /**
      * Initialization hook method.
      *
@@ -43,6 +45,9 @@ class AppController extends Controller
 
         $this->loadComponent('RequestHandler');
         $this->RequestHandler->renderAs($this, 'json');
+        $this->redis = new \Redis();
+        $this->redis->connect('redis', 6379);
+        
         //$this->loadComponent('Flash');
 
         /*
