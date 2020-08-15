@@ -128,6 +128,7 @@ class GroupsController extends AppController
             'status_message' => $message,
             'data' => $group,
         ]);
+        $this->response = $this->response->withStatus(201);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);
     }
 
@@ -162,11 +163,11 @@ class GroupsController extends AppController
     {
         $this->request->allowMethod(['delete']);
         $group = $this->Groups->get($id);
-        $message = 'Deleted';
-        $statusCode = 'cdc-200';
-        if (!$this->Groups->delete($group)) {
-                $message = 'Error';
-                $statusCode = 'cdc-115';
+        // $message = 'Deleted';
+        // $statusCode = 'cdc-200';
+        if ($this->Groups->delete($group)) {
+                // $message = 'Error';
+                // $statusCode = 'cdc-115';
 
                 $groupCaches = $this->redis->keys('groups::list*');
                 foreach ($groupCaches as $c) {
@@ -176,9 +177,9 @@ class GroupsController extends AppController
                 $this->redis->del('groups::'.$id);
         }
         $this->set([
-            'status_message' => $message,
+            'status_message' => null, // $message,
             'data' => null,
-            'status_code' => $statusCode
+            'status_code' => null // $statusCode
         ]);
         $this->response = $this->response->withStatus(204);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);

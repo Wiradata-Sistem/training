@@ -48,4 +48,5 @@ $routes->scope('/', function (RouteBuilder $routes) {
     $routes->setExtensions(['json']);
     $routes->resources('Groups');
     $routes->resources('Users');
+    $routes->resources('Curls');
 });
