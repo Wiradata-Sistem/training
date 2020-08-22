@@ -218,18 +218,18 @@
 					"response": []
 				},
 				{
-					"name": "/groups/:id",
+					"name": "/curls/:id",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/groups/3",
+							"raw": "{{url}}/curls/1",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
-								"groups",
-								"3"
+								"curls",
+								"1"
 							]
 						}
 					},
@@ -268,13 +268,291 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/curls/22",
+							"raw": "{{url}}/curls/27",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"curls",
-								"22"
+								"27"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "guzzles",
+			"item": [
+				{
+					"name": "/guzzles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/guzzles",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"guzzles"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "order",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "keyword",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/guzzles",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"admin products\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/guzzles",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"guzzles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/guzzles/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/guzzles/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"guzzles",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/guzzles/:id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"edit form guzzle\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/guzzles/43",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"guzzles",
+								"43"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/guzzles/:id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/guzzles/43",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"guzzles",
+								"43"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "http-clients",
+			"item": [
+				{
+					"name": "/http-clients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/http-clients",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"http-clients"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "order",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "keyword",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/http-clients",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"admin products\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/http-clients",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"http-clients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/http-clients/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/guzzles/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"guzzles",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/http-clients/:id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"edit form guzzle\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/http-clients/43",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"http-clients",
+								"43"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/http-clients/:id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/http-clients/43",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"http-clients",
+								"43"
 							]
 						}
 					},
