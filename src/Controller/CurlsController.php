@@ -49,18 +49,38 @@ class CurlsController extends AppController
     public function view($id)
     {
         $cacheKey = 'groups::'.$id;
-        $response = $this->redis->get($cacheKey);
-        if (!$response) {
-            $group = $this->Groups->get($id);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://nginx/groups/'.$id);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        $res = get_object_vars(json_decode(curl_exec($ch)));
+
+        if (curl_error($ch)) {
             $response = [
-                "status_code" => "cdc-200",
-                "status_message" => "success",
-                "data" => $group
+                'status_code' => 'cdc-100',
+                'status_message' => curl_error($ch),
+                'data' => null
             ];
-            $this->redis->set($cacheKey, serialize($response));
         } else {
-            $response = unserialize($response);
+            $response = [
+                'status_code' => 'cdc-299',
+                'status_message' => 'invalid json format response',
+                'data' =>$res
+            ];
+            
+            if (is_array($res) && isset($res['status_code']) && isset($res['status_message']) && isset($res['data'])) {
+                $response = [
+                    'status_code' => $res['status_code'],
+                    'status_message' => $res['status_message'],
+                    'data' => $res['data']
+                ];
+            }
         }
+
+        curl_close($ch);
+
         $this->set(['status_code', 'status_message', 'data'], $response);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);
     }
@@ -170,22 +190,24 @@ class CurlsController extends AppController
     {
         $this->request->allowMethod(['delete']);
 
-        $header = [
+        /*$header = [
             'Content-Type: application/json',
             'Accept: application/json'
-        ];
+        ];*/
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://nginx/groups/'.$id);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        // curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
 
-        $res = get_object_vars(json_decode(curl_exec($ch)));
-        var_dump($res);
-        $isErrorResponse = false;
+        $body = json_decode(curl_exec($ch));
+    
+        if ($body) {
+            $res = get_object_vars($body);    
+        }
             
         $response = [
             'status_code' => 'cdc-200',
@@ -194,28 +216,21 @@ class CurlsController extends AppController
         ];
 
         if (curl_error($ch)) {
-            $response = [
-                'status_code' => 'cdc-100',
-                'status_message' => curl_error($ch),
-                'data' => null
-            ];
+            throw new Exception(curl_error($ch));
         } else {
-            if (is_array($res) && isset($res['status_code']) && isset($res['status_message']) && isset($res['data'])) {
+            if (isset($res) && is_array($res) && isset($res['status_code']) && isset($res['status_message']) && (isset($res['data']) || $res['data'] === null )) {
                 $response = [
                     'status_code' => $res['status_code'],
                     'status_message' => $res['status_message'],
                     'data' => $res['data']
                 ];
-
-                $isErrorResponse = true;
             }
+
+            $this->response = $this->response->withStatus(curl_getinfo($ch, CURLINFO_HTTP_CODE));
         }
 
         curl_close($ch);
 
-        if (!$isErrorResponse) {
-            $this->response = $this->response->withStatus(204);
-        } 
         $this->set(['status_code', 'status_message', 'data'], $response);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);
     }
