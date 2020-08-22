@@ -109,26 +109,23 @@ class GroupsController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post', 'put']);
-        $group = $this->Groups->newEntity($this->request->getData());
-        if ($this->Groups->save($group)) {
-            $message = 'Saved';
-            $statusCode = 'cdc-200';
 
-            $groupCaches = $this->redis->keys('groups::list*');
-            foreach ($groupCaches as $c) {
-                $this->redis->del($c);
-            }
-        } else {
-            $message = 'Error';
-            $statusCode = 'cdc-115';
-        }
+        $config = \Kafka\ProducerConfig::getInstance();
+        $config->setMetadataRefreshIntervalMs(10000);
+        $config->setMetadataBrokerList('kafka:9092');
+        $config->setBrokerVersion('1.0.0');
+        $config->setRequiredAck(1);
+        $config->setIsAsyn(false);
+        $config->setProduceInterval(500);
+
+        $producer = new \Kafka\Producer();
+        $producer->send([[ 'topic' => 'add_group', 'value' => serialize($this->request->getData()), 'key' => 'testkey']]);
 
         $this->set([
-            'status_code' => $statusCode,
-            'status_message' => $message,
-            'data' => $group,
+            'status_code' => 'cdc-200',
+            'status_message' => 'sudah dikirim ke kafka',
+            'data' => null,
         ]);
-        $this->response = $this->response->withStatus(201);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);
     }
 
