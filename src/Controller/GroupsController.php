@@ -109,24 +109,22 @@ class GroupsController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post', 'put']);
-        $group = $this->Groups->newEntity($this->request->getData());
-        if ($this->Groups->save($group)) {
-            $message = 'Saved';
-            $statusCode = 'cdc-200';
 
-            $groupCaches = $this->redis->keys('groups::list*');
-            foreach ($groupCaches as $c) {
-                $this->redis->del($c);
-            }
-        } else {
-            $message = 'Error';
-            $statusCode = 'cdc-115';
-        }
+        $config = \Kafka\ProducerConfig::getInstance();
+        $config->setMetadataRefreshIntervalMs(10000);
+        $config->setMetadataBrokerList('kafka:9092');
+        $config->setBrokerVersion('1.0.0');
+        $config->setRequiredAck(1);
+        $config->setIsAsyn(false);
+        $config->setProduceInterval(500);
+
+        $producer = new \Kafka\Producer();
+        $producer->send([[ 'topic' => 'add_group', 'value' => serialize($this->request->getData()), 'key' => 'testkey']]);
 
         $this->set([
-            'status_code' => $statusCode,
-            'status_message' => $message,
-            'data' => $group,
+            'status_code' => 'cdc-200',
+            'status_message' => 'sudah dikirim ke kafka',
+            'data' => null,
         ]);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);
     }
@@ -162,11 +160,11 @@ class GroupsController extends AppController
     {
         $this->request->allowMethod(['delete']);
         $group = $this->Groups->get($id);
-        $message = 'Deleted';
-        $statusCode = 'cdc-200';
-        if (!$this->Groups->delete($group)) {
-                $message = 'Error';
-                $statusCode = 'cdc-115';
+        // $message = 'Deleted';
+        // $statusCode = 'cdc-200';
+        if ($this->Groups->delete($group)) {
+                // $message = 'Error';
+                // $statusCode = 'cdc-115';
 
                 $groupCaches = $this->redis->keys('groups::list*');
                 foreach ($groupCaches as $c) {
@@ -176,9 +174,9 @@ class GroupsController extends AppController
                 $this->redis->del('groups::'.$id);
         }
         $this->set([
-            'status_message' => $message,
+            'status_message' => null, // $message,
             'data' => null,
-            'status_code' => $statusCode
+            'status_code' => null // $statusCode
         ]);
         $this->response = $this->response->withStatus(204);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);
