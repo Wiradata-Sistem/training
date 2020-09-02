@@ -26,8 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: install composer
+      - name: list all docker service
         run: docker ps -a
+        
+      - name: install composer
+        run: docker exec -d erp composer install -n
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
