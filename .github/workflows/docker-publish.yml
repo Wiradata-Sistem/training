@@ -15,9 +15,9 @@ on:
 
 env:
   # TODO: Change variable to your image's name.
-  IMAGE_NAME: ${{ secret.IMAGE_ERP }}
-  DOCKER_USER: ${{ secret.DOCKER_HUB_USERNAME }}
-  DOCKER_PWD: ${{ secret.DOCKER_HUB_PASSWORD }}
+  IMAGE_NAME: ${{ secrets.IMAGE_ERP }}
+  DOCKER_USER: ${{ secrets.DOCKER_HUB_USERNAME }}
+  DOCKER_PWD: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
 jobs:
   # Run tests.
