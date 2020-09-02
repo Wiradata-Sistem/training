@@ -56,4 +56,4 @@ custom styles.
 This App using GPL3 License
 
 ## Testing
-for testing purpose
+for testing purpose. Please read the readme carefully
