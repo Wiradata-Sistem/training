@@ -26,11 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Run pwd
-        run: pwd
-        
-      - name: Run ls
-        run: ls
+      - name: install composer
+        run: docker exec -ti erp composer install
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
@@ -44,5 +41,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build image
-        run: echo "BUILD IMAGE"
+      - name: Get https://nginx/groups
+        run: curl https://nginx/groups -k
