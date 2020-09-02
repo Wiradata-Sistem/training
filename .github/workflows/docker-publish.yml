@@ -42,4 +42,4 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Get https://nginx/groups
-        run: curl https://nginx/groups -k
+        run: curl https://erp.local/groups -k
