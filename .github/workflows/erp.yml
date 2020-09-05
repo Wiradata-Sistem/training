@@ -46,3 +46,6 @@ jobs:
 
       - name: print salam
         run: echo "salam"
+        
+      - name: curl index
+        run: curl -k https://erp.local
