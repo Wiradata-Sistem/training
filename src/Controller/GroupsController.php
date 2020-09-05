@@ -110,6 +110,7 @@ class GroupsController extends AppController
     {
         $this->request->allowMethod(['post', 'put']);
 
+        /*
         $config = \Kafka\ProducerConfig::getInstance();
         $config->setMetadataRefreshIntervalMs(10000);
         $config->setMetadataBrokerList('kafka:9092');
@@ -120,12 +121,51 @@ class GroupsController extends AppController
 
         $producer = new \Kafka\Producer();
         $producer->send([[ 'topic' => 'add_group', 'value' => serialize($this->request->getData()), 'key' => 'testkey']]);
+        */
 
-        $this->set([
+        $key = md5(rand() . date("YYYY-mm-dd H:i:s"));
+        //var_dump($key);
+        $producer = new \RdKafka\Producer(new \RdKafka\Conf());
+        $producer->addBrokers("kafka:9092");
+
+        $producerTopic = $producer->newTopic("add_group");
+        $producerTopic->produce(RD_KAFKA_PARTITION_UA, 0, serialize(['key'=>$key, 'data'=>$this->request->getData()]));
+        $producer->flush(500);
+
+        $conf = new \RdKafka\Conf();
+        $conf->set('group.id', 'resAddGroup');
+        $consumer = new \RdKafka\Consumer($conf);
+        $consumer->addBrokers("kafka");
+        $topic = $consumer->newTopic("res_add_group");
+        //$topic->consumeStart(0, RD_KAFKA_OFFSET_STORED);
+        $topic->consumeStart(0, RD_KAFKA_OFFSET_BEGINNING);
+
+        $response = [
             'status_code' => 'cdc-200',
             'status_message' => 'sudah dikirim ke kafka',
             'data' => null,
-        ]);
+        ];
+
+        $looping = true;
+        while ($looping) {
+            $msg = $topic->consume(0, 1000);
+            if (null === $msg || $msg->err === RD_KAFKA_RESP_ERR__PARTITION_EOF) {
+              continue;
+            } elseif ($msg->err) {
+              $response['status_code'] = 'cdc-100';
+              $response['status_message'] = $msg->errstr();
+              $looping = false;
+              break;
+            } else {
+              $responseKafka = unserialize($msg->payload);
+              if (isset($responseKafka["key"]) && $responseKafka["key"] === $key) {
+                $looping = false;
+                $response = $responseKafka["response"];
+              }
+            }
+          }
+
+        $this->set($response);
         $this->viewBuilder()->setOption('serialize', ['status_code', 'status_message', 'data']);
     }
 
