@@ -161,6 +161,12 @@ class GroupsController extends AppController
               if (isset($responseKafka["key"]) && $responseKafka["key"] === $key) {
                 $looping = false;
                 $response = $responseKafka["response"];
+
+                if ($response["status_code"] === "cdc-200") {
+                    $this->response = $this->response->withStatus(201);
+                } else {
+                    $this->response = $this->response->withStatus(400);
+                }
               }
             }
           }
