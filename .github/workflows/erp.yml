@@ -32,7 +32,7 @@ jobs:
         run: docker exec -i erp sh -c "composer install -n"
 
       - name: api testing
-        run: docker exec -i erp sh -c "vendor/codecept run"
+        run: docker exec -i erp sh -c "vendor/bin/codecept run"
         
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
