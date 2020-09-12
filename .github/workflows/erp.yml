@@ -40,9 +40,6 @@ jobs:
       - name: ls erp
         run: docker exec -i erp ls
         
-      - name: API testing
-        run: docker exec -i erp php /var/www/vendor/bin/codecept run
-
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
   push:
@@ -55,8 +52,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: print salam
-        run: echo "salam"
+      - name: build erp-prod
+        run: docker build jackyhtg/erp-prod:{{ github.ref }}
         
-      - name: curl index
-        run: curl -k https://erp.local
+      - name: docker login
+        run: docker login -u {{ secrets.DOCKER_HUB_USERNAME }} --password {{ secrets.DOCKER_HUB_PASSWORD }}
+        
+      - name: push erp-prod ke hub
+        run: docker push jackyhtg/erp-prod:{{ github.ref }}
