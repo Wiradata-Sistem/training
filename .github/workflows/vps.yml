@@ -17,7 +17,9 @@ jobs:
         run: docker exec -i erp sh -c "composer install -n"
         
       - name: build erp-prod
-        run: docker build -t jackyhtg/erp-prod:${{ github.ref }} .
+        run: |
+        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+        docker build -t jackyhtg/erp-prod:$VERSION .
         
   deploy:
     needs: build
