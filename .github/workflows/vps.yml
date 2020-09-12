@@ -13,13 +13,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         
-      - name: composer install
-        run: docker exec -i erp sh -c "composer install -n"
-        
-      - name: build erp-prod
-        run: |
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          docker build -t jackyhtg/erp-prod:$VERSION .
+      - name: set docker version
+        run: echo VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          
+      - name: build docker
+        run: docker build -t jackyhtg/erp-prod:$VERSION .
         
   deploy:
     needs: build
@@ -28,14 +26,11 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
       - name: docker login
         run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password ${{ secrets.DOCKER_HUB_PASSWORD }}
         
-      - name: push docker and ssh to myVPS
-        run: |
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          docker push jackyhtg/erp-prod:$VERSION
-          ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod $VERSION
+      - name: push to docker hub 
+        run: docker push jackyhtg/erp-prod:$VERSION
+        
+      - name: deploy
+        run: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod $VERSION
