@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: build erp-prod
-        run: docker build jackyhtg/erp-prod:{{ github.ref }}
+        run: docker build -t jackyhtg/erp-prod:{{ github.ref }} .
         
       - name: docker login
         run: docker login -u {{ secrets.DOCKER_HUB_USERNAME }} --password {{ secrets.DOCKER_HUB_PASSWORD }}
