@@ -4,6 +4,9 @@ on:
 
 name: Deploy to VPS
 
+env:
+  VERSION: $(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
 jobs:
   build:
     name: Build
@@ -13,9 +16,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         
-      - name: set docker version
-        run: echo VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          
       - name: build docker
         run: docker build -t jackyhtg/erp-prod:$VERSION .
         
