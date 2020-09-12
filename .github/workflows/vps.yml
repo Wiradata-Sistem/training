@@ -18,8 +18,8 @@ jobs:
         
       - name: build erp-prod
         run: |
-        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-        docker build -t jackyhtg/erp-prod:$VERSION .
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          docker build -t jackyhtg/erp-prod:$VERSION .
         
   deploy:
     needs: build
@@ -36,6 +36,6 @@ jobs:
         
       - name: push docker and ssh to myVPS
         run: |
-        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-        docker push jackyhtg/erp-prod:$VERSION
-        ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod $VERSION
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          docker push jackyhtg/erp-prod:$VERSION
+          ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod $VERSION
