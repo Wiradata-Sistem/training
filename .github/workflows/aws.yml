@@ -1,0 +1,17 @@
+on:
+  release:
+    types: [created]
+
+name: Deploy to VPS
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: ssh to myVPS
+      run: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod
