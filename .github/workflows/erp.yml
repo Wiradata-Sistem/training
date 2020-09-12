@@ -33,6 +33,9 @@ jobs:
         
       - name: cat composer.json 
         run: cat composer.json
+        
+      - name: API testing
+        run: docker exec -d erp php vendor/bin/codecept run
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
