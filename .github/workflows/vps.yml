@@ -4,9 +4,6 @@ on:
 
 name: Deploy to VPS
 
-env:
-  VERSION: $(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
 jobs:
   build:
     name: Build
@@ -17,7 +14,9 @@ jobs:
         uses: actions/checkout@v2
         
       - name: build docker
-        run: docker build -t jackyhtg/erp-prod:$VERSION .
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          docker build -t jackyhtg/erp-prod:$VERSION .
         
   deploy:
     needs: build
@@ -30,7 +29,11 @@ jobs:
         run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password ${{ secrets.DOCKER_HUB_PASSWORD }}
         
       - name: push to docker hub 
-        run: docker push jackyhtg/erp-prod:$VERSION
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          docker push jackyhtg/erp-prod:$VERSION
         
       - name: deploy
-        run: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod $VERSION
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod $VERSION
