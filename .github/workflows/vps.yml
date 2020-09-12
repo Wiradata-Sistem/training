@@ -20,11 +20,14 @@ jobs:
         run: docker build -t jackyhtg/erp-prod:${{ github.ref }} .
         
   deploy:
+    needs: build
+    
     name: Deploy
     runs-on: self-hosted
 
     steps:
-      - uses: build
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: docker login
         run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password ${{ secrets.DOCKER_HUB_PASSWORD }}
