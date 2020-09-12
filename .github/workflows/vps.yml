@@ -5,13 +5,32 @@ on:
 name: Deploy to VPS
 
 jobs:
+  build:
+    name: Build
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: composer install
+        run: docker exec -i erp sh -c "composer install -n"
+        
+      - name: build erp-prod
+        run: docker build -t jackyhtg/erp-prod:${{ github.ref }} .
+        
   deploy:
     name: Deploy
     runs-on: self-hosted
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - uses: build
 
-    - name: ssh to myVPS
-      run: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod
+      - name: docker login
+        run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password ${{ secrets.DOCKER_HUB_PASSWORD }}
+        
+      - name: push erp-prod ke hub
+        run: docker push jackyhtg/erp-prod:${{ github.ref }}
+
+      - name: ssh to myVPS
+        run: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod
