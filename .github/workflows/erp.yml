@@ -1,0 +1,62 @@
+name: Docker
+
+on:
+  push:
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
+
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+  # Run tests for any PRs.
+  pull_request:
+    branches: 
+      - master
+
+env:
+  # TODO: Change variable to your image's name.
+  IMAGE_NAME: image
+
+jobs:
+  # Run tests.
+  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
+  test:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: composer install
+        run: docker exec -d erp composer install
+        
+      - name: cat composer.json 
+        run: cat composer.json
+        
+      - name: pwd erp
+        run: docker exec -i erp pwd
+
+      - name: ls erp
+        run: docker exec -i erp ls
+        
+      - name: API testing
+        run: docker exec -i erp php /var/www/vendor/bin/codecept run
+
+  # Push image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  push:
+    # Ensure test job passes before pushing image.
+    needs: test
+
+    runs-on: self-hosted
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: print salam
+        run: echo "salam"
+        
+      - name: curl index
+        run: curl -k https://erp.local
