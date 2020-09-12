@@ -34,6 +34,12 @@ jobs:
       - name: cat composer.json 
         run: cat composer.json
         
+      - name: pwd erp
+        run: docker exec -i erp pwd
+
+      - name: ls erp
+        run: docker exec -i erp ls
+        
       - name: API testing
         run: docker exec -i erp php vendor/bin/codecept run
 
