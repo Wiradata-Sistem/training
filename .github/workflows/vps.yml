@@ -32,8 +32,8 @@ jobs:
       - name: docker login
         run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password ${{ secrets.DOCKER_HUB_PASSWORD }}
         
-      - name: push erp-prod ke hub
-        run: docker push jackyhtg/erp-prod:${{ github.ref }}
-
-      - name: ssh to myVPS
-        run: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod
+      - name: push docker and ssh to myVPS
+        run: |
+        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+        docker push jackyhtg/erp-prod:$VERSION
+        ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod $VERSION
