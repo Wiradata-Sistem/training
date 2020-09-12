@@ -18,7 +18,7 @@ jobs:
         
       - name: build erp-prod
         run: |
-        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
         docker build -t jackyhtg/erp-prod:$VERSION .
         
   deploy:
@@ -36,6 +36,6 @@ jobs:
         
       - name: push docker and ssh to myVPS
         run: |
-        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
         docker push jackyhtg/erp-prod:$VERSION
         ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} /root/erp-prod $VERSION
