@@ -2,6 +2,9 @@
 declare(strict_types=1);
 namespace App\Controller;
 
+use JackyHtg\Tools;
+use Cake\Http\Exception\BadRequestException;
+
 class UsersController extends AppController 
 {
     public function index()
@@ -21,6 +24,12 @@ class UsersController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post', 'put']);
+        
+        $tools = new Tools("/usr/sbin/cracklib-check", "/usr/bin/pwscore");
+        if ($tools->PasswordMeter($this->request->getData('password')) <= 75) {
+            throw new BadRequestException(__('Please supply strong Password'));
+        }
+
         $User = $this->Users->newEntity($this->request->getData());
         if ($this->Users->save($User)) {
             $message = 'Saved';
