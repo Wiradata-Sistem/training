@@ -11,7 +11,8 @@
         "cakephp/plugin-installer": "^1.2",
         "guzzlehttp/guzzle": "^7.0",
         "mobiledetect/mobiledetectlib": "^2.8",
-        "nmred/kafka-php": "0.2.*"
+        "nmred/kafka-php": "0.2.*",
+        "web-token/jwt-framework": "^2.2"
     },
     "require-dev": {
         "cakephp/bake": "^2.0.3",

@@ -47,4 +47,12 @@ class User extends Entity
     protected $_hidden = [
         'password',
     ];
+
+    protected function _setPassword(string $password) : ?string
+    {
+        if (strlen($password) > 0) {
+            Return password_hash(env('SECURITY_SALT', '20a154bd44cf73a3ef2dc4caf4d8922e561deb6d12c4a946379b05d0cfe0deea').$password, PASSWORD_DEFAULT);
+        }
+    }
+
 }

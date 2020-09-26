@@ -15,7 +15,7 @@ use Cake\Error\ErrorHandler;
 use Cake\Http\Exception\NotFoundException;
 
 
-class ErrorApiMiddleware implements MiddlewareInterface
+class ErrorApiMiddleware extends ApiMiddleware implements MiddlewareInterface
 {
     use InstanceConfigTrait;
     
@@ -67,34 +67,6 @@ class ErrorApiMiddleware implements MiddlewareInterface
             $response = $response->withStatus(500);
             $errorHandler->logException($internalException, $request);
         }
-        return $response->withStringBody(json_encode($json));
-    }
-
-    public function notFoundException(Throwable $exception, ServerRequestInterface $request): ResponseInterface    
-    {
-        $response = (new Response)->withType('application/json');
-        $json =  ["status_code" => "cdc-002", "status_message" => "ops! internal server error", "data"=> null];
-        try {
-            $json["status_code"] = "cdc-001";
-            $json["status_message"] = $exception->getMessage();
-            $response = $response->withStatus(404);
-        } catch (Throwable $internalException) {
-                $response = $response->withStatus(500);
-            }
-        return $response->withStringBody(json_encode($json));
-    }
-
-    public function recordNotFoundException(Throwable $exception, ServerRequestInterface $request): ResponseInterface    
-    {
-        $response = (new Response)->withType('application/json');
-        $json =  ["status_code" => "cdc-002", "status_message" => "ops! internal server error", "data"=> null];
-        try {
-            $json["status_code"] = "cdc-0011";
-            $json["status_message"] = $exception->getMessage();
-            $response = $response->withStatus(404);
-        } catch (Throwable $internalException) {
-                $response = $response->withStatus(500);
-            }
         return $response->withStringBody(json_encode($json));
     }
 

@@ -51,4 +51,5 @@ $routes->scope('/', function (RouteBuilder $routes) {
     $routes->resources('Curls');
     $routes->resources('Guzzles');
     $routes->resources('HttpClients');
+    $routes->connect('/login', ['controller' => 'Auths', 'action' => 'login']);
 });

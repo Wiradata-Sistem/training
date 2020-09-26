@@ -26,6 +26,7 @@ use Cake\Http\MiddlewareQueue;
 //use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use App\Middleware\ErrorApiMiddleware;
+use App\Middleware\AuthApiMiddleware;
 
 /**
  * Application setup class.
@@ -86,6 +87,7 @@ class Application extends BaseApplication
             // using it's second constructor argument:
             // `new RoutingMiddleware($this, '_cake_routes_')`
             ->add(new RoutingMiddleware($this))
+            ->add(new AuthApiMiddleware())
 
             // Parse various types of encoded request bodies so that they are
             // available as array through $request->getData()

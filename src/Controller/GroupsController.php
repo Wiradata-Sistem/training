@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Cache\Cache;
+use Cake\Validation\Validator;
+use Cake\Http\Exception\BadRequestException;
 
 class GroupsController extends AppController 
 {
@@ -109,6 +111,19 @@ class GroupsController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post', 'put']);
+
+        $validator = new Validator();
+        $validator->requirePresence('name')
+            ->notEmpty('name');
+        $errors = $validator->validate($this->request->getData());
+        if (!empty($errors)) {
+            foreach ($errors as $key => $err) {
+                foreach($err as $k => $e) {
+                    throw new BadRequestException($key . ' is ' . ltrim($k, '_'));
+                    break 2;
+                }
+            }
+        }
 
         /*
         $config = \Kafka\ProducerConfig::getInstance();
