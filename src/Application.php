@@ -115,5 +115,7 @@ class Application extends BaseApplication
         $this->addPlugin('Migrations');
 
         // Load more plugins here
+        Configure::write('Acl.database', 'default');
+        $this->addPlugin('Acl');
     }
 }

@@ -52,4 +52,6 @@ $routes->scope('/', function (RouteBuilder $routes) {
     $routes->resources('Guzzles');
     $routes->resources('HttpClients');
     $routes->connect('/login', ['controller' => 'Auths', 'action' => 'login']);
+    $routes->connect('/forgot-password', ['controller' => 'Auths', 'action' => 'forgot']);
+    $routes->connect('/change-password/:token', ['controller' => 'Auths', 'action' => 'changePassword'])->setPass(['token']);
 });
