@@ -6,6 +6,9 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Cache\Cache;
 use Cake\Validation\Validator;
 use Cake\Http\Exception\BadRequestException;
+use Cake\Error\Debugger;
+use Cake\Log\Log;
+use Error;
 
 class GroupsController extends AppController 
 {
